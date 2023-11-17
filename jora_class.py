@@ -1,0 +1,2 @@
+class Jora:
+    pass
