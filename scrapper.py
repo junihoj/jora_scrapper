@@ -184,6 +184,20 @@ class BASE(SELENIUM, REQUESTS, TRACEBACK):
                     (fuzz.ratio(title.lower(), catgy.lower()) > 30))):
             self.done_comps[company_name.lower()] = True
             return True
+        
+    def get_us_proxy(self):
+        response = requests.get("https://proxy.webshare.io/api/proxy/list/?page=" + str(
+                    2), headers={"Authorization": "Token 697bfb06a037cccc135419ceb1d08669b1f15384"})
+        pr = response.json()
+        us_proxies = []
+        for proxy in pr['results']:
+            #check if proxy country is us
+            if "country_code" in proxy.keys() and proxy['country_code']=='US':
+                us_proxies.append(proxy)
+
+        return us_proxies
+
+                
     # def track_backError(self):
     #     error_type, error, tb = sys.exc_info()
     #     filename, lineno, func_name, line = traceback.extract_tb(tb)[-1]

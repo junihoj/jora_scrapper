@@ -1,9 +1,10 @@
+from threading import Thread
 import pathlib
 import requests
 from scrapper import BASE
 # from helpers import us_cities, uk_cities, au_cities, ca_cities, nz_cities
 from constants import job_tiles_with_categories
-from get_jora_data import getData
+from get_jora_data2 import getData
 
 BASE_DIR = pathlib.Path(__file__).parent.resolve()
 print('BASE_DIR',BASE_DIR )
@@ -53,4 +54,7 @@ if __name__== "__main__":
                 write_file(f"{catgry} : {keyword}", "keywords")
                 url = template_urls[country].format(keyword.replace(' ', '+'))
                 proxy_in = base_obj.get_proxy()
-                getData(url, catgry, keyword, scrape_country, base_obj)
+                # getData(url, catgry, keyword, scrape_country, base_obj)
+                thread = Thread(target=getData, args=(url, catgry, keyword, scrape_country, base_obj))
+                thread.start()
+                thread.join()

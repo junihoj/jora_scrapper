@@ -90,18 +90,16 @@ def parse_job(cat_name, keyword, scrape_country, base_obj):
     data = (
             dt_string, "Jora", job_title, cat_name, job_link, location, company, keyword, "",
             type_of_job, job_desc, posted_date, scrape_country)
-    base_obj.db_insertion("temp_raw_leads",data)
+    # base_obj.db_insertion("temp_raw_leads",data)
     with open(f"scraped_data.csv", mode='a', encoding='utf-8',
                     newline='') as file:
             writer = csv.writer(file)
             writer.writerow(list(data))
-    #checking for next button
-    try:
-        next_button = driver.find_element(By.XPATH, '//a[@class="next-page-button"]')
-        next_button.click()
-        # wait_apply_button = WebDriverWait(driver, 180).until(
-        #     EC.presence_of_element_located((By.XPATH, '//a[@data-gtm="apply-job"]'))
-        # )
+
+def getData(url, catgry, keyword, scrape_country, base_obj):
+    # url = template_url.format(keyword, page)
+    driver.get(url)
+    def scrape_page():
         try:
             modal_close_btn = driver.find_elements(By.XPATH, '//div[@class="modal-header"]/div')
             # driver.execute_script("arguments[0].click();", modal_close_btn[1])
@@ -110,45 +108,36 @@ def parse_job(cat_name, keyword, scrape_country, base_obj):
             print("ELEMENT NOT FOUND")
         except ElementNotInteractableException:
             print("NOT INTERACTABLE")
+        
         wait_job_cards = WebDriverWait(driver, 180).until(
-        EC.presence_of_element_located((By.XPATH, '//div[@class="job-card result organic-job -split-view"]'))
-        ) 
-        parse_job(base_obj, cat_name, keyword, scrape_country) 
-    except NoSuchElementException:
-        pass
-    except ElementNotInteractableException:
-        pass
-
-def getData(url, catgry, keyword, scrape_country, base_obj):
-    # url = template_url.format(keyword, page)
-    driver.get(url)
-    try:
-        modal_close_btn = driver.find_elements(By.XPATH, '//div[@class="modal-header"]/div')
-        # driver.execute_script("arguments[0].click();", modal_close_btn[1])
-        modal_close_btn[0].click()
-    except NoSuchElementException:
-        print("ELEMENT NOT FOUND")
-    except ElementNotInteractableException:
-        print("NOT INTERACTABLE")
-    
-    wait_job_cards = WebDriverWait(driver, 180).until(
-        EC.presence_of_element_located((By.XPATH, '//div[@class="job-card result organic-job -split-view"]'))
-    )
-    job_cards = driver.find_elements(By.XPATH, '//div[@class="job-card result organic-job -split-view"]')
-    for job_card in job_cards:
-        job_card.click()
-    try:
-        modal_close_btn = driver.find_elements(By.XPATH, '//div[@class="modal-header"]/div')
-        # driver.execute_script("arguments[0].click();", modal_close_btn[1])
-        modal_close_btn[0].click()
-    except NoSuchElementException:
-        print("ELEMENT NOT FOUND")
-    except ElementNotInteractableException:
-        print("NOT INTERACTABLE")
-        wait_apply_button = WebDriverWait(driver, 180).until(
-            EC.presence_of_element_located((By.XPATH, '//a[@data-gtm="apply-job"]'))
+            EC.presence_of_element_located((By.XPATH, '//div[@class="job-card result organic-job -split-view"]'))
         )
-        WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.XPATH, "//div[@class='job-description-container']")))
-        parse_job(catgry, keyword, scrape_country, base_obj)
-        # time.sleep(100)
-    
+        job_cards = driver.find_elements(By.XPATH, '//div[@class="job-card result organic-job -split-view"]')
+        for job_card in range(0,1):
+            job_cards[0].click()
+            try:
+                modal_close_btn = driver.find_elements(By.XPATH, '//div[@class="modal-header"]/div')
+                # driver.execute_script("arguments[0].click();", modal_close_btn[1])
+                modal_close_btn[0].click()
+            except NoSuchElementException:
+                print("ELEMENT NOT FOUND")
+            except ElementNotInteractableException:
+                print("NOT INTERACTABLE")
+                wait_apply_button = WebDriverWait(driver, 180).until(
+                    EC.presence_of_element_located((By.XPATH, '//a[@data-gtm="apply-job"]'))
+                )
+                WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.XPATH, "//div[@class='job-description-container']")))
+            parse_job(catgry, keyword, scrape_country, base_obj)
+            # time.sleep(100)
+
+        #checking for next button
+        try:
+            next_button = driver.find_element(By.XPATH, '//a[@class="next-page-button"]')
+            next_button.click()
+            # parse_job(base_obj, catgry, keyword, scrape_country) 
+            scrape_page()
+        except NoSuchElementException:
+            print("NO SUCH ELEMENT NEXT BUTTON")
+        except ElementNotInteractableException:
+            print("next button not interactable")
+        
