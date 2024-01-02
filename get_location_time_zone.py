@@ -55,7 +55,13 @@ def get_company_time_zone(location):
     except TimeoutException:
         print("Unable to get search box")
         return
-    timezone_text = get_element_by_xpath('//div[contains(@class, "dDoNo")]')
-    timezone_text.text
-    print("HERE IS THE TEXT")
-    driver.quit()
+    try:
+        timezone_text = get_element_by_xpath('//div[contains(@class, "dDoNo")]')
+        # print("HERE IS THE TEXT", timezone_text.text)
+        # driver.quit()
+        return timezone_text.text
+    except:
+        return ''
+    
+
+# get_company_time_zone("united states")

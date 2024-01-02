@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+from selenium.webdriver.common.by import By
 
 scriptPath = os.path.realpath(os.path.dirname(sys.argv[0]))
 os.chdir(scriptPath)
@@ -149,19 +150,44 @@ class BASE(SELENIUM, REQUESTS, TRACEBACK):
         pass
 
     def db_insertion(self, table, data):
+        # payload = {
+        #     "scrape_source": data[1],
+        #     "scrape_company_name": data[6],
+        #     "scrape_company_domain": data[8],
+        #     "scrape_job_title": data[2],
+        #     "scrape_job_url": data[4],
+        #     "scrape_job_location": data[5],
+        #     "scrape_category": data[3],
+        #     "scrape_keyword": data[7],
+        #     "scrape_type_of_job": data[9],
+        #     "scrape_job_description": data[10],
+        #     "scrape_posted_time": data[11],
+        #     "scrape_country": data[12],
+        #     "scrape_job_post_date":data[13],
+        #     "scrape_job_scrape_date":data[14],
+        #     "scrape_timezone":data[15],
+        #     "scrape_company_size":data[16]
+        # }
+
         payload = {
-            "scrape_source": data[1],
-            "scrape_company_name": data[6],
-            "scrape_company_domain": data[8],
-            "scrape_job_title": data[2],
-            "scrape_job_url": data[4],
-            "scrape_job_location": data[5],
-            "scrape_category": data[3],
-            "scrape_keyword": data[7],
-            "scrape_type_of_job": data[9],
-            "scrape_job_description": data[10],
-            "scrape_posted_time": data[11],
-            "scrape_country": data[12]
+            "scrape_source": data[0],
+            "scrape_company_name": data[9],
+            "scrape_company_domain": data[12],
+            "scrape_job_title": data[1],
+            "scrape_job_url": data[6],
+            "scrape_job_location": data[7],
+            "scrape_category": data[5],
+            "scrape_keyword": data[15],
+            "scrape_type_of_job": data[2],
+            "scrape_job_description": data[14],
+            "scrape_posted_time": data[13],
+            "scrape_country": data[11],
+            "scrape_job_post_date": data[3],
+            "scrape_job_scrape_date": data[4],
+            "scrape_timezone": data[8],
+            "scrape_company_size": data[10],
+            "job_title_scrape": data[16]
+
         }
         scrape_data_upload = self.zwilt_base_url.format("/continuous-lead-scrape/")
         response = requests.post(scrape_data_upload, data=payload)
@@ -193,9 +219,19 @@ class BASE(SELENIUM, REQUESTS, TRACEBACK):
         for proxy in pr['results']:
             #check if proxy country is us
             if "country_code" in proxy.keys() and proxy['country_code']=='US':
-                us_proxies.append(proxy)
+                if(proxy["valid"]) and proxy["country_code_confidence"]>=0.8:
+                    us_proxies.append(proxy)
 
         return us_proxies
+    
+    def get_element_attr_by_xpath(driver, xpath, attr):
+        try:
+            ele = driver.find_element(By.XPATH, xpath)
+            return ele.get_attribute(attr)
+            # return ele.text
+        except:
+            return ""
+
 
                 
     # def track_backError(self):

@@ -1,0 +1,38 @@
+from geopy.geocoders import Nominatim
+from timezonefinder import TimezoneFinder
+import pytz
+
+def find_full_timezone_name(location):
+    geolocator = Nominatim(user_agent="timezone_finder")
+    
+    try:
+        # Get the latitude and longitude of the location
+        location_info = geolocator.geocode(location)
+        latitude, longitude = location_info.latitude, location_info.longitude
+    except AttributeError:
+        return None, None
+
+    tf = TimezoneFinder()
+    timezone_str = tf.timezone_at(lat=latitude, lng=longitude)
+
+    if timezone_str:
+        # Get the timezone object using the string obtained from timezonefinder
+        tz = pytz.timezone(timezone_str)
+        print("THE TZ OBJECT", tz)
+        # Get the full timezone name
+        full_timezone_name = tz.zone
+        standard_time_name = tz.utcoffset(None).strftime('%Z')
+        print("THE STANDARD TIME", standard_time_name)
+        return timezone_str, full_timezone_name
+    else:
+        return None, None
+
+# Example usage
+location = "New York"  # Replace with the location you want to find the timezone for
+
+timezone_str, full_timezone_name = find_full_timezone_name(location)
+if timezone_str and full_timezone_name:
+    print(f'Timezone: {timezone_str}')
+    print(f'Full Timezone Name: {full_timezone_name}')
+else:
+    print('Timezone not found for the given location.')

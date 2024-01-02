@@ -4,6 +4,13 @@ import re
 API_KEY = open('api_key.txt', 'r').read()
 openai.api_key = API_KEY
 
+def get_employee_ids(list_of_prospect):
+    list_of_ids = []
+    for staff in  list_of_prospect:
+        list_of_ids.append(staff['id'])
+    return list_of_ids
+
+
 def get_right_prospect(list_of_staff):
     employee_job_titles = [employee_data['title'] for employee_data in list_of_staff if employee_data['title'] is not None]
     comma_separated = "\n".join(employee_job_titles)
@@ -22,14 +29,16 @@ def get_right_prospect(list_of_staff):
 
     assistant_response = initial_response.choices[0].message.content
 
-    print("ASSISTANT ANSWER", assistant_response)
+    # print("ASSISTANT ANSWER", assistant_response)
     # print("GPT RESPONSE", re.split( r'(\d.\s)', assistant_response))
     splitted_response = re.split( r'(\d.\s)', assistant_response)
     # matched  = ['Co President of Arise', 'President, Global Business Solutions']
     matched = [title.replace("\n","") for title in splitted_response if title.replace("\n","").strip() in employee_job_titles ]
     selected_prospect = [k for k in list_of_staff if k['title'] in matched]
-    print("SELECTED STATE", selected_prospect)
-    return selected_prospect
+    employees_ids = get_employee_ids(selected_prospect)
+    print(employees_ids)
+    return employees_ids
+    # return selected_prospect
 
 
 
